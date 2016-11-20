@@ -1,7 +1,7 @@
 --- 
 branches:
   ignore:
-    - gh-pages # list of branches to ignore
+    - gh-pages
 dependencies: 
   bundler:
     without: [development]
