@@ -6,4 +6,3 @@ notify:
 test: 
   override: 
     - true
-        parallel: true
