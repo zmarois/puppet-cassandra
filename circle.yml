@@ -5,4 +5,4 @@ notify:
       url: "https://webhooks.gitter.im/e/da8c065419a91983f0cf"
 test: 
   override: 
-    - true
+    - bundle exec true
