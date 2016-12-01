@@ -337,6 +337,24 @@ also <code>cqlsh_password</code>, <code>cqlsh_client_config</code></p>
   
     <li>
       
+        <span class='name'>permissions</span>
+      
+      
+        <span class='type'>(<tt>hash</tt>)</span>
+      
+      
+        <em class="default">(defaults to: <tt>{}</tt>)</em>
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>Creates new <code>cassandra::schema::permission</code> resources.</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
         <span class='name'>tables</span>
       
       
@@ -381,8 +399,6 @@ also <code>cqlsh_password</code>, <code>cqlsh_client_config</code></p>
         <pre class="lines">
 
 
-33
-34
 35
 36
 37
@@ -465,10 +481,21 @@ also <code>cqlsh_password</code>, <code>cqlsh_client_config</code></p>
 114
 115
 116
-117</pre>
+117
+118
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128</pre>
       </td>
       <td>
-        <pre class="code"><span class="info file"># File 'manifests/schema.pp', line 33</span>
+        <pre class="code"><span class="info file"># File 'manifests/schema.pp', line 35</span>
 
 class cassandra::schema (
   $connection_tries         = 6,
@@ -484,6 +511,7 @@ class cassandra::schema (
   $cqlsh_user               = &#39;cassandra&#39;,
   $indexes                  = {},
   $keyspaces                = {},
+  $permissions              = {},
   $tables                   = {},
   $users                    = {},
   ) inherits cassandra::params {
@@ -548,12 +576,20 @@ class cassandra::schema (
     create_resources(&#39;cassandra::schema::user&#39;, $users)
   }
 
+  # manage permissions if present
+  if $permissions {
+    create_resources(&#39;cassandra::schema::permission&#39;, $permissions)
+  }
+
   # Resource Ordering
   Cassandra::Schema::Keyspace &lt;| |&gt; -&gt; Cassandra::Schema::Cql_type &lt;| |&gt;
   Cassandra::Schema::Keyspace &lt;| |&gt; -&gt; Cassandra::Schema::Table &lt;| |&gt;
+  Cassandra::Schema::Keyspace &lt;| |&gt; -&gt; Cassandra::Schema::Permission &lt;| |&gt;
   Cassandra::Schema::Cql_type &lt;| |&gt; -&gt; Cassandra::Schema::Table &lt;| |&gt;
   Cassandra::Schema::Table &lt;| |&gt; -&gt; Cassandra::Schema::Index &lt;| |&gt;
+  Cassandra::Schema::Table &lt;| |&gt; -&gt; Cassandra::Schema::Permission &lt;| |&gt;
   Cassandra::Schema::Index &lt;| |&gt; -&gt; Cassandra::Schema::User &lt;| |&gt;
+  Cassandra::Schema::User &lt;| |&gt; -&gt; Cassandra::Schema::Permission &lt;| |&gt;
 }</pre>
       </td>
     </tr>
@@ -562,7 +598,7 @@ class cassandra::schema (
 </div>
 
       <div id="footer">
-  Generated on Mon Nov 21 22:38:47 2016 by
+  Generated on Thu Dec  1 18:00:43 2016 by
   <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.5 (ruby-2.3.1).
 </div>

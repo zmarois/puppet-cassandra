@@ -408,6 +408,28 @@ class { &#39;cassandra::schema&#39;:
       },
     }
   },
+  permissions    =&gt; {
+    &#39;Grant select permissions to spillman to all keyspaces&#39; =&gt; {
+      permission_name =&gt; &#39;SELECT&#39;,
+      user_name       =&gt; &#39;spillman&#39;,
+    },
+    &#39;Grant modify to to keyspace mykeyspace to akers&#39;       =&gt; {
+      keyspace_name   =&gt; &#39;mykeyspace&#39;,
+      permission_name =&gt; &#39;MODIFY&#39;,
+      user_name       =&gt; &#39;akers&#39;,
+    },
+    &#39;Grant alter permissions to mykeyspace to boone&#39;        =&gt; {
+      keyspace_name   =&gt; &#39;mykeyspace&#39;,
+      permission_name =&gt; &#39;ALTER&#39;,
+      user_name       =&gt; &#39;boone&#39;,
+    },
+    &#39;Grant ALL permissions to mykeyspace.users to gbennet&#39;  =&gt; {
+      keyspace_name   =&gt; &#39;mykeyspace&#39;,
+      permission_name =&gt; &#39;ALTER&#39;,
+      table_name      =&gt; &#39;users&#39;,
+      user_name       =&gt; &#39;gbennet&#39;,
+    },
+  },
   tables         =&gt; {
     &#39;users&#39; =&gt; {
       columns  =&gt; {
@@ -429,6 +451,9 @@ class { &#39;cassandra::schema&#39;:
     },
     &#39;boone&#39;    =&gt; {
       password =&gt; &#39;Niner75&#39;,
+    },
+    &#39;gbennet&#39;  =&gt; {
+      &#39;password&#39; =&gt; &#39;foobar&#39;,
     },
     &#39;lucan&#39;    =&gt; {
       &#39;ensure&#39; =&gt; absent
@@ -633,6 +658,9 @@ href="http://locp.github.io/cassandra/puppet_defined_types/cassandra_3A_3Aschema
 href="http://locp.github.io/cassandra/puppet_defined_types/cassandra_3A_3Aschema_3A_3Akeyspace.html">cassandra::schema::keyspace</a></p>
 </li><li>
 <p><a
+href="http://locp.github.io/cassandra/puppet_defined_types/cassandra_3A_3Aschema_3A_3Apermission.html">cassandra::schema::permission</a></p>
+</li><li>
+<p><a
 href="http://locp.github.io/cassandra/puppet_defined_types/cassandra_3A_3Aschema_3A_3Atable.html">cassandra::schema::table</a></p>
 </li><li>
 <p><a
@@ -648,7 +676,19 @@ href="http://locp.github.io/cassandra/puppet_defined_types/cassandra_3A_3Aprivat
 <h3 id="label-Facts">Facts</h3>
 <ul><li>
 <p><a
+href="http://locp.github.io/cassandra/top-level-namespace.html#cassandracmsheapnewsize-instance_method">cassandracmsheapnewsize</a></p>
+</li><li>
+<p><a
+href="http://locp.github.io/cassandra/top-level-namespace.html#cassandracmsmaxheapsize-instance_method">cassandracmsmaxheapsize</a></p>
+</li><li>
+<p><a
+href="http://locp.github.io/cassandra/top-level-namespace.html#cassandraheapnewsize-instance_method">cassandraheapnewsize</a></p>
+</li><li>
+<p><a
 href="http://locp.github.io/cassandra/top-level-namespace.html#cassandramajorversion-instance_method">cassandramajorversion</a></p>
+</li><li>
+<p><a
+href="http://locp.github.io/cassandra/top-level-namespace.html#cassandramaxheapsize-instance_method">cassandramaxheapsize</a></p>
 </li><li>
 <p><a
 href="http://locp.github.io/cassandra/top-level-namespace.html#cassandraminorversion-instance_method">cassandraminorversion</a></p>
@@ -691,7 +731,7 @@ href="https://github.com/locp/cassandra/graphs/contributors">github.com/locp/cas
 </div></div>
 
       <div id="footer">
-  Generated on Mon Nov 21 22:38:46 2016 by
+  Generated on Thu Dec  1 18:00:41 2016 by
   <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.5 (ruby-2.3.1).
 </div>
