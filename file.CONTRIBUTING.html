@@ -70,6 +70,8 @@
 </li><li>
 <p><a href="#unit-tests">Unit Tests</a></p>
 </li><li>
+<p><a href="#acceptance-tests">Acceptance Tests</a></p>
+</li><li>
 <p><a href="#contributors">Contributors</a></p>
 </li><li>
 <p><a href="#further-reading">Further Reading</a></p>
@@ -129,13 +131,11 @@ supported operating  systems.</p>
 <p>First, you&#39;ll need to install the testing dependencies using <a
 href="http://bundler.io">bundler</a>.</p>
 
-<pre class="code ruby"><code class="ruby"><span class='id identifier rubyid_bundle'>bundle</span> <span class='id identifier rubyid_install'>install</span>
-</code></pre>
+<pre class="code ruby"><code class="ruby"><span class='id identifier rubyid_bundle'>bundle</span> <span class='id identifier rubyid_install'>install</span></code></pre>
 
 <p>To run all of the unit tests execute the following:</p>
 
-<pre class="code ruby"><code class="ruby"><span class='id identifier rubyid_bundle'>bundle</span> <span class='id identifier rubyid_exec'>exec</span> <span class='id identifier rubyid_rake'>rake</span> <span class='id identifier rubyid_test'>test</span>
-</code></pre>
+<pre class="code ruby"><code class="ruby"><span class='id identifier rubyid_bundle'>bundle</span> <span class='id identifier rubyid_exec'>exec</span> <span class='id identifier rubyid_rake'>rake</span> <span class='id identifier rubyid_test'>test</span></code></pre>
 
 <p>This should output something like the following:</p>
 
@@ -168,11 +168,29 @@ separately with individual commands:</p>
 <span class='id identifier rubyid_bundle'>bundle</span> <span class='id identifier rubyid_exec'>exec</span> <span class='id identifier rubyid_rake'>rake</span> <span class='id identifier rubyid_rubocop'>rubocop</span>
 <span class='id identifier rubyid_bundle'>bundle</span> <span class='id identifier rubyid_exec'>exec</span> <span class='id identifier rubyid_rake'>rake</span> <span class='id identifier rubyid_lint'>lint</span>
 <span class='id identifier rubyid_bundle'>bundle</span> <span class='id identifier rubyid_exec'>exec</span> <span class='id identifier rubyid_rake'>rake</span> <span class='id identifier rubyid_validate'>validate</span>
-<span class='id identifier rubyid_bundle'>bundle</span> <span class='id identifier rubyid_exec'>exec</span> <span class='id identifier rubyid_rake'>rake</span> <span class='id identifier rubyid_spec'>spec</span>
-</code></pre>
+<span class='id identifier rubyid_bundle'>bundle</span> <span class='id identifier rubyid_exec'>exec</span> <span class='id identifier rubyid_rake'>rake</span> <span class='id identifier rubyid_spec'>spec</span></code></pre>
 
 <p>If in doubt, or you are stuck, please ask for help in the PR or via our <a
 href="https://gitter.im/locp/cassandra">Gitter Room</a>.</p>
+
+<p>The unit tests will also fail if the test coverage falls below 100%.</p>
+
+<h3 id="label-Acceptance+Tests">Acceptance Tests</h3>
+
+<p>These tests are more CPU intensive and are run via Docker. You will need to
+install further gems for this to work with the following command:</p>
+
+<pre class="code ruby"><code class="ruby">bundle install --with acceptance</code></pre>
+
+<p>Then run the tests:</p>
+
+<pre class="code ruby"><code class="ruby"><span class='id identifier rubyid_bundle'>bundle</span> <span class='id identifier rubyid_exec'>exec</span> <span class='id identifier rubyid_rake'>rake</span> <span class='label'>beaker:</span><span class='id identifier rubyid_centos6'>centos6</span>
+<span class='id identifier rubyid_bundle'>bundle</span> <span class='id identifier rubyid_exec'>exec</span> <span class='id identifier rubyid_rake'>rake</span> <span class='label'>beaker:</span><span class='id identifier rubyid_centos7'>centos7</span>                                        
+<span class='id identifier rubyid_bundle'>bundle</span> <span class='id identifier rubyid_exec'>exec</span> <span class='id identifier rubyid_rake'>rake</span> <span class='label'>beaker:</span><span class='id identifier rubyid_debian7'>debian7</span>                                        
+<span class='id identifier rubyid_bundle'>bundle</span> <span class='id identifier rubyid_exec'>exec</span> <span class='id identifier rubyid_rake'>rake</span> <span class='label'>beaker:</span><span class='id identifier rubyid_debian8'>debian8</span>                                        
+<span class='id identifier rubyid_bundle'>bundle</span> <span class='id identifier rubyid_exec'>exec</span> <span class='id identifier rubyid_rake'>rake</span> <span class='label'>beaker:</span><span class='id identifier rubyid_ubuntu1204'>ubuntu1204</span>                                     
+<span class='id identifier rubyid_bundle'>bundle</span> <span class='id identifier rubyid_exec'>exec</span> <span class='id identifier rubyid_rake'>rake</span> <span class='label'>beaker:</span><span class='id identifier rubyid_ubuntu1404'>ubuntu1404</span>                                     
+<span class='id identifier rubyid_bundle'>bundle</span> <span class='id identifier rubyid_exec'>exec</span> <span class='id identifier rubyid_rake'>rake</span> <span class='label'>beaker:</span><span class='id identifier rubyid_ubuntu1604'>ubuntu1604</span></code></pre>
 
 <h2 id="label-Contributors">Contributors</h2>
 
@@ -283,9 +301,9 @@ href="https://github.com/puppetlabs/beaker/tree/master/docs">github.com/puppetla
 </div></div>
 
       <div id="footer">
-  Generated on Thu Dec  8 00:32:22 2016 by
+  Generated on Thu Dec  8 08:13:17 2016 by
   <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
-  0.9.5 (ruby-2.3.1).
+  0.9.5 (ruby-2.1.6).
 </div>
 
     </div>
