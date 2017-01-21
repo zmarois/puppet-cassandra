@@ -75,7 +75,11 @@
       
       <span class='object_link'><a href="cassandra_3A_3Aoptutils.html" title="puppet_classes::cassandra::optutils (puppet_class)">cassandra::optutils</a></span><br/>
       
+      <span class='object_link'><a href="cassandra_3A_3Asystem_3A_3Asysctl.html" title="puppet_classes::cassandra::system::sysctl (puppet_class)">cassandra::system::sysctl</a></span><br/>
+      
       <span class='object_link'><a href="cassandra_3A_3Adatastax_agent.html" title="puppet_classes::cassandra::datastax_agent (puppet_class)">cassandra::datastax_agent</a></span><br/>
+      
+      <span class='object_link'><a href="cassandra_3A_3Asystem_3A_3Atransparent_hugepage.html" title="puppet_classes::cassandra::system::transparent_hugepage (puppet_class)">cassandra::system::transparent_hugepage</a></span><br/>
       
     </dd>
   </dl>
@@ -91,33 +95,8 @@
 <div class="docstring">
   <div class="discussion">
     
-<p>This class is meant to be called from cassandra. It sets variables
-according to platform</p>
-
-<h2 id="label-Variables">Variables</h2>
-<ul><li>
-<p><code>$::cassandra::params::cassandra_pkg</code> defaults to
-&#39;cassandra&#39; on Debian and &#39;cassandra22&#39; on Red Hat.</p>
-</li><li>
-<p><code>$::cassandra::params::config_path</code> defaults to
-&#39;/etc/cassandra&#39; on Debian and
-&#39;/etc/cassandra/default.conf&#39; on Red Hat.</p>
-</li><li>
-<p><code>$::cassandra::params::java_package</code> defaults to
-&#39;openjdk-7-jre-headless&#39; on Debian and
-&#39;java-1.8.0-openjdk-headless&#39; on Red Hat.</p>
-</li><li>
-<p><code>$::cassandra::params::jna_package_name</code> defaults to
-&#39;libjna-java&#39; on Debian and &#39;jna&#39; on Red Hat.</p>
-</li><li>
-<p><code>$::cassandra::params::optutils_package_name</code> defaults to
-&#39;cassandra-tools&#39; on Debian and &#39;cassandra22-tools&#39; on Red
-Hat.</p>
-</li><li>
-<p><code>$::cassandra::params::systemctl</code> defaults to
-&#39;/bin/systemctl&#39; on Debian and &#39;/usr/bin/systemctl&#39; on Red
-Hat.</p>
-</li></ul>
+<p>This class is meant to be called from the locp-cassandra module. It sets
+variables according to platform.</p>
 
   </div>
 </div>
@@ -131,6 +110,21 @@ Hat.</p>
         <pre class="lines">
 
 
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
 18
 19
 20
@@ -153,22 +147,59 @@ Hat.</p>
 37
 38
 39
-40</pre>
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51</pre>
       </td>
       <td>
-        <pre class="code"><span class="info file"># File 'manifests/params.pp', line 18</span>
+        <pre class="code"><span class="info file"># File 'manifests/params.pp', line 3</span>
 
 class cassandra::params {
   case $::osfamily {
     &#39;Debian&#39;: {
+      case $::operatingsystemmajrelease {
+        12.04: {
+          $net_ipv4_tcp_rmem = &#39;4096 87380 16777216&#39;
+          $net_ipv4_tcp_wmem = &#39;4096 65536 16777216&#39;
+        }
+        default: {
+          $net_ipv4_tcp_rmem = &#39;4096, 87380, 16777216&#39;
+          $net_ipv4_tcp_wmem = &#39;4096, 65536, 16777216&#39;
+        }
+      }
+
       $cassandra_pkg = &#39;cassandra&#39;
       $config_path = &#39;/etc/cassandra&#39;
       $java_package = &#39;openjdk-7-jre-headless&#39;
       $jna_package_name = &#39;libjna-java&#39;
       $optutils_package_name = &#39;cassandra-tools&#39;
+      $sysctl_file = &#39;/etc/sysctl.d/10-cassandra.conf&#39;
       $systemctl = &#39;/bin/systemctl&#39;
     }
     &#39;RedHat&#39;: {
+      case $::operatingsystemmajrelease {
+        6: {
+          $net_ipv4_tcp_rmem = &#39;4096 87380 16777216&#39;
+          $net_ipv4_tcp_wmem = &#39;4096 65536 16777216&#39;
+          $sysctl_file = &#39;/etc/sysctl.conf&#39;
+        }
+        7: {
+          $net_ipv4_tcp_rmem = &#39;4096, 87380, 16777216&#39;
+          $net_ipv4_tcp_wmem = &#39;4096, 65536, 16777216&#39;
+          $sysctl_file = &#39;/etc/sysctl.d/10-cassandra.conf&#39;
+        }
+        default: {}
+      }
+
       $cassandra_pkg = &#39;cassandra22&#39;
       $config_path = &#39;/etc/cassandra/default.conf&#39;
       $java_package = &#39;java-1.8.0-openjdk-headless&#39;
@@ -188,9 +219,9 @@ class cassandra::params {
 </div>
 
       <div id="footer">
-  Generated on Sat Jan 14 00:33:05 2017 by
+  Generated on Sat Jan 21 16:24:07 2017 by
   <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
-  0.9.8 (ruby-2.1.6).
+  0.9.8 (ruby-2.1.9).
 </div>
 
     </div>

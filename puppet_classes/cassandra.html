@@ -90,6 +90,27 @@ configuration file.</p>
   
     <li>
       
+        <span class='name'>baseline_settings</span>
+      
+      
+        <span class='type'>(<tt>hash</tt>)</span>
+      
+      
+        <em class="default">(defaults to: <tt>{}</tt>)</em>
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>If set, this is a baseline of settings that are merged with the
+<code>settings</code> hash. The values of the <code>settings</code> hash
+overriding the values in this hash. This is most useful when used with
+hiera.</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
         <span class='name'>cassandra_2356_sleep_seconds</span>
       
       
@@ -699,10 +720,6 @@ installed. Will silently continue if the executable does not exist.</p>
         <pre class="lines">
 
 
-124
-125
-126
-127
 128
 129
 130
@@ -952,12 +969,18 @@ installed. Will silently continue if the executable does not exist.</p>
 374
 375
 376
-377</pre>
+377
+378
+379
+380
+381
+382</pre>
       </td>
       <td>
-        <pre class="code"><span class="info file"># File 'manifests/init.pp', line 124</span>
+        <pre class="code"><span class="info file"># File 'manifests/init.pp', line 128</span>
 
 class cassandra (
+  $baseline_settings            = {},
   $cassandra_2356_sleep_seconds = 5,
   $cassandra_9822               = false,
   $cassandra_yaml_tmpl          = &#39;cassandra/cassandra.yaml.erb&#39;,
@@ -1159,7 +1182,7 @@ class cassandra (
     $saved_caches_directory_settings = $settings
   }
 
-  $merged_settings = merge($settings,
+  $merged_settings = merge($baseline_settings, $settings,
     $commitlog_directory_settings,
     $data_file_directories_settings,
     $hints_directory_settings,
@@ -1218,9 +1241,9 @@ class cassandra (
 </div>
 
       <div id="footer">
-  Generated on Sat Jan 14 00:33:05 2017 by
+  Generated on Sat Jan 21 16:24:07 2017 by
   <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
-  0.9.8 (ruby-2.1.6).
+  0.9.8 (ruby-2.1.9).
 </div>
 
     </div>

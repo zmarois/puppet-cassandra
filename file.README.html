@@ -370,6 +370,28 @@ class { &#39;cassandra&#39;:
 }
 </code></pre>
 
+<h3 id="label-Hiera">Hiera</h3>
+
+<p>In your top level node classification (usually <code>common.yaml</code>),
+add the settings hash and all the tweaks you want all the clusters to use:</p>
+
+<pre class="code ruby"><code class="ruby">cassandra::baseline_settings:
+  authenticator: AllowAllAuthenticator
+  authorizer: AllowAllAuthorizer
+  auto_bootstrap: true
+  auto_snapshot: true
+  ...</code></pre>
+
+<p>Then, in the individual node classification add the parts which define the
+cluster:</p>
+
+<pre class="code ruby"><code class="ruby">cassandra::settings:
+  cluster_name: developer playground cassandra cluster
+cassandra::dc: Onsite1
+cassandra::rack: RAC1
+cassandra::package_ensure: 3.0.5-1
+cassandra::package_name: cassandra30</code></pre>
+
 <h2 id="label-Usage">Usage</h2>
 
 <h3 id="label-Setup+a+keyspace+and+users">Setup a keyspace and users</h3>
@@ -645,6 +667,15 @@ href="http://locp.github.io/cassandra/puppet_classes/cassandra_3A_3Aoptutils.htm
 </li><li>
 <p><a
 href="http://locp.github.io/cassandra/puppet_classes/cassandra_3A_3Aschema.html">cassandra::schema</a></p>
+</li><li>
+<p><a
+href="http://locp.github.io/cassandra/puppet_classes/cassandra_3A_3Asystem_3A_3Aswapoff.html">cassandra::system::swapoff</a></p>
+</li><li>
+<p><a
+href="http://locp.github.io/cassandra/puppet_classes/cassandra_3A_3Asystem_3A_3Asysctl.html">cassandra::system::sysctl</a></p>
+</li><li>
+<p><a
+href="http://locp.github.io/cassandra/puppet_classes/cassandra_3A_3Asystem_3A_3Atransparent_hugepage.html">cassandra::system::transparent_hugepage</a></p>
 </li></ul>
 
 <h3 id="label-Public+Defined+Types">Public Defined Types</h3>
@@ -705,15 +736,19 @@ href="http://locp.github.io/cassandra/top-level-namespace.html#cassandrarelease-
 </li></ul>
 
 <h2 id="label-Limitations">Limitations</h2>
-
+<ul><li>
 <p>When using a Ruby version before 1.9.0, the contents of the Cassandra
 configuration file may change order of elements due to a problem with
 to_yaml in earlier versions of Ruby.</p>
-
+</li><li>
 <p>When creating key spaces, indexes, cql_types and users the settings will
 only be used to create a new resource if it does not currently exist. If a
 change is made to the Puppet manifest but the resource already exits, this
 change will not be reflected.</p>
+</li><li>
+<p>At the moment the <code>cassandra::system::transparent_hugepage</code> does
+not persist between reboots.</p>
+</li></ul>
 
 <h2 id="label-Development">Development</h2>
 
@@ -735,9 +770,9 @@ href="https://github.com/locp/cassandra/graphs/contributors">github.com/locp/cas
 </div></div>
 
       <div id="footer">
-  Generated on Sat Jan 14 00:33:03 2017 by
+  Generated on Sat Jan 21 16:24:05 2017 by
   <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
-  0.9.8 (ruby-2.1.6).
+  0.9.8 (ruby-2.1.9).
 </div>
 
     </div>

@@ -4,7 +4,7 @@
     <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>
-  Puppet Class: cassandra::optutils
+  Puppet Class: cassandra::system::swapoff
   
     &mdash; Documentation by YARD 0.9.8
   
@@ -15,7 +15,7 @@
   <link rel="stylesheet" href="../css/common.css" type="text/css" charset="utf-8" />
 
 <script type="text/javascript" charset="utf-8">
-  pathId = "puppet_classes::cassandra::optutils";
+  pathId = "puppet_classes::cassandra::system::swapoff";
   relpath = '../';
 </script>
 
@@ -39,7 +39,7 @@
     <a href="../_index.html">Index (c)</a> &raquo;
     <span class='title'><span class='object_link'>Puppet Classes</span></span>
      &raquo; 
-    <span class="title">cassandra::optutils</span>
+    <span class="title">cassandra::system::swapoff</span>
   
 </div>
 
@@ -59,19 +59,14 @@
         <div class="clear"></div>
       </div>
 
-      <div id="content"><h1>Puppet Class: cassandra::optutils</h1>
+      <div id="content"><h1>Puppet Class: cassandra::system::swapoff</h1>
 <div class="box_info">
-  
-  <dl>
-    <dt>Inherits:</dt>
-    <dd><span class='object_link'><a href="cassandra_3A_3Aparams.html" title="puppet_classes::cassandra::params (puppet_class)">cassandra::params</a></span></dd>
-  </dl>
   
   
   <dl>
     <dt>Defined in:</dt>
     <dd>
-      manifests/optutils.pp
+      manifests/system/swapoff.pp
     </dd>
   </dl>
 </div>
@@ -79,7 +74,8 @@
 <div class="docstring">
   <div class="discussion">
     
-<p>A class to install the optional Cassandra tools package.</p>
+<p>Disable swap on the node as suggested at <a
+href="http://docs.datastax.com/en/landing_page/doc/landing_page/recommendedSettingsLinux.html">docs.datastax.com/en/landing_page/doc/landing_page/recommendedSettingsLinux.html</a></p>
 
   </div>
 </div>
@@ -89,43 +85,69 @@
   
     <li>
       
-        <span class='name'>package_ensure</span>
+        <span class='name'>device</span>
       
       
         <span class='type'>(<tt>string</tt>)</span>
       
       
-        <em class="default">(defaults to: <tt>&#39;present&#39;</tt>)</em>
+        <em class="default">(defaults to: <tt>undef</tt>)</em>
       
       
         &mdash;
         <div class='inline'>
-<p>Can be <code>present</code>, <code>latest</code> or a specific version
-number.</p>
+<p>If provided a mount resource will be created to ensure that the device is
+absent from /etc/fstab to permanently disable swap.</p>
 </div>
       
     </li>
   
     <li>
       
-        <span class='name'>package_name</span>
+        <span class='name'>mount</span>
       
       
         <span class='type'>(<tt>string</tt>)</span>
       
       
-        <em class="default">(defaults to: <tt>$::cassandra::params::optutils_package_name</tt>)</em>
+        <em class="default">(defaults to: <tt>&#39;swap&#39;</tt>)</em>
       
       
         &mdash;
         <div class='inline'>
-<p>The name of the optional utilities package to be installed.</p>
+<p>The name of the swap mount point. Ignored unless <code>device</code> has
+been set.</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>path</span>
+      
+      
+        <span class='type'>(<tt>string</tt>)</span>
+      
+      
+        <em class="default">(defaults to: <tt>&#39;/proc/swaps&#39;</tt>)</em>
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>The full path to the file to check if swap is enabled.</p>
 </div>
       
     </li>
   
 </ul>
 
+
+  <p class="tag_title">See Also:</p>
+  <ul class="see">
+    
+      <li><span class='object_link'><a href="cassandra_3A_3Aparams.html" title="puppet_classes::cassandra::params (puppet_class)">params</a></span></li>
+    
+  </ul>
 
 </div><div class="method_details_list">
   <table class="source_code">
@@ -134,26 +156,46 @@ number.</p>
         <pre class="lines">
 
 
-6
-7
-8
 9
 10
 11
 12
 13
-14</pre>
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27</pre>
       </td>
       <td>
-        <pre class="code"><span class="info file"># File 'manifests/optutils.pp', line 6</span>
+        <pre class="code"><span class="info file"># File 'manifests/system/swapoff.pp', line 9</span>
 
-class cassandra::optutils (
-  $package_ensure = &#39;present&#39;,
-  $package_name   = $::cassandra::params::optutils_package_name,
-  ) inherits cassandra::params {
-  package { $package_name:
-    ensure  =&gt; $package_ensure,
-    require =&gt; Class[&#39;cassandra&#39;],
+class cassandra::system::swapoff(
+  $device  = undef,
+  $mount   = &#39;swap&#39;,
+  $path    = &#39;/proc/swaps&#39;,
+  ) {
+  exec { &#39;Disable Swap&#39;:
+    command =&gt; &#39;swapoff --all&#39;,
+    onlyif  =&gt; &quot;grep -q &#39;^/&#39; ${path}&quot;,
+    path    =&gt; [ &#39;/bin&#39;, &#39;/sbin&#39;, &#39;/usr/bin&#39;, &#39;/usr/sbin&#39; ],
+  }
+
+  if $device {
+    mount { $mount:
+      ensure =&gt; absent,
+      device =&gt; $device,
+      fstype =&gt; &#39;swap&#39;,
+    }
   }
 }</pre>
       </td>
