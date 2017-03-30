@@ -103,6 +103,8 @@ Single Data Center</a></p>
 Multiple Data Centers</a></p>
 </li><li>
 <p><a href="#datastax-enterprise">DataStax Enterprise</a></p>
+</li><li>
+<p><a href="#apache-cassandra">Apache Cassandra</a></p>
 </li></ul>
 </li><li>
 <p><a href="#reference">Reference</a></p>
@@ -154,6 +156,12 @@ from (on Red Hat).</p>
 </li><li>
 <p>Optionally configures an Apt repository to install the Cassandra packages 
 from (on Debian).</p>
+</li></ul>
+
+<h4 id="label-What+the+cassandra%3A%3Adse+class+affects">What the cassandra::dse class affects</h4>
+<ul><li>
+<p>Optionally configures files in the <code>/etc/dse</code> directory if one
+is using  DataStax Enterprise.</p>
 </li></ul>
 
 <h4 id="label-What+the+cassandra%3A%3Afirewall_ports+class+affects">What the cassandra::firewall_ports class affects</h4>
@@ -209,8 +217,8 @@ see <a
 href="https://github.com/locp/cassandra/wiki/Deprecations">github.com/locp/cassandra/wiki/Deprecations</a></p>
 
 <p>For details on migrating from the version 1.X.X attributes to the
-<code>settings</code> hash, see <a
-href="https://github.com/locp/cassandra/wiki/Version-1.X.Y-Template-Defaults-Shown-As-2.X.Y-Hash">github.com/locp/cassandra/wiki/Version-1.X.Y-Template-Defaults-Shown-As-2.X.Y-Hash</a></p>
+<code>settings</code> hash, see (<a
+href="https://github.com/locp/cassandra/wiki/Suggested-Baseline-Settings">github.com/locp/cassandra/wiki/Suggested-Baseline-Settings</a>)</p>
 
 <p>Please also see the notes for 2.0.0 in the <a
 href="https://forge.puppet.com/locp/cassandra/changelog">CHANGELOG</a>.</p>
@@ -321,7 +329,7 @@ service_ensure.</p>
 GossipingPropertyFileSnitch and password authentication. In this very basic
 example the node itself becomes a seed for the cluster and the credentials
 will default to a user called cassandra with a password called of
-cassandra..</p>
+cassandra.</p>
 
 <pre class="code ruby"><code class="ruby"># Cassandra pre-requisites
 include cassandra::datastax_repo
@@ -354,6 +362,13 @@ class { &#39;cassandra&#39;:
   require  =&gt; Class[&#39;cassandra::datastax_repo&#39;, &#39;cassandra::java&#39;],
 }
 </code></pre>
+
+<p>However, <strong>PLEASE</strong> note that this is the <strong>ABSOLUTE
+MINIMUM</strong> configuration to get Cassandra up and running but will
+probably give you a rather badly configured node. Please see <a
+href="https://github.com/locp/cassandra/wiki/Suggested-Baseline-Settings">Suggested
+Baseline Settings</a> for details on making your configuration a lot more
+robust.</p>
 
 <p>For this code to run with version 3.X of Cassandra, the
 <code>hints_directory</code> will also need to be specified:</p>
@@ -643,97 +658,92 @@ RAC1 is the default value. Again, do not forget to either set
 auto_bootstrap to true or not set the attribute at all after initializing
 the cluster.</p>
 
+<h3 id="label-DataStax+Enterprise">DataStax Enterprise</h3>
+
+<p>After configuring the relevant repository, the following snippet works on
+CentOS 7 to install DSE Cassandra 4.7.0, set the HADOOP_LOG_DIR, set the
+DSE_HOME and configure DataStax Enterprise to use LDAP for authentication:</p>
+
+<pre class="code ruby"><code class="ruby">class { &#39;cassandra::datastax_repo&#39;:
+  descr   =&gt; &#39;DataStax Repo for DataStax Enterprise&#39;,
+  pkg_url =&gt; &#39;https://username:password@rpm.datastax.com/enterprise&#39;,
+  before  =&gt; Class[&#39;cassandra&#39;],
+}
+
+class { &#39;cassandra&#39;:
+  cluster_name    =&gt; &#39;MyCassandraCluster&#39;,
+  config_path     =&gt; &#39;/etc/dse/cassandra&#39;,
+  package_ensure  =&gt; &#39;4.7.0-1&#39;,
+  package_name    =&gt; &#39;dse-full&#39;,
+  service_name    =&gt; &#39;dse&#39;,
+  ...
+}
+
+class { &#39;cassandra::dse&#39;:
+  file_lines =&gt; {
+    &#39;Set HADOOP_LOG_DIR directory&#39; =&gt; {
+      ensure =&gt; present,
+      path   =&gt; &#39;/etc/dse/dse-env.sh&#39;,
+      line   =&gt; &#39;export HADOOP_LOG_DIR=/var/log/hadoop&#39;,
+      match  =&gt; &#39;^# export HADOOP_LOG_DIR=&lt;log_dir&gt;&#39;,
+    },
+    &#39;Set DSE_HOME&#39;                 =&gt; {
+      ensure =&gt; present,
+      path   =&gt; &#39;/etc/dse/dse-env.sh&#39;,
+      line   =&gt; &#39;export DSE_HOME=/usr/share/dse&#39;,
+      match  =&gt; &#39;^#export DSE_HOME&#39;,
+    },
+  },
+  settings   =&gt; {
+    ldap_options =&gt; {
+      server_host                =&gt; localhost,
+      server_port                =&gt; 389,
+      search_dn                  =&gt; &#39;cn=Admin&#39;,
+      search_password            =&gt; secret,
+      use_ssl                    =&gt; false,
+      use_tls                    =&gt; false,
+      truststore_type            =&gt; jks,
+      user_search_base           =&gt; &#39;ou=users,dc=example,dc=com&#39;,
+      user_search_filter         =&gt; &#39;(uid={0})&#39;,
+      credentials_validity_in_ms =&gt; 0,
+      connection_pool            =&gt; {
+        max_active =&gt; 8,
+        max_idle   =&gt; 8,
+      }
+    }
+  }
+}
+</code></pre>
+
+<h3 id="label-Apache+Cassandra">Apache Cassandra</h3>
+
+<p>DataStax announced in late October 2016 that it was no longer supporting
+the community edition of Cassandra or DSC as it was known (see <em>[Take a
+bow Planet Cassandra]</em>(<a
+href="http://www.datastax.com/2016/10/take-a-bow-planet-cassandra">www.datastax.com/2016/10/take-a-bow-planet-cassandra</a>)
+for details). However, the following snippet of code running on Ubuntu
+14.04 worked fine without having to change any of the
+<code>::cassandra</code> class settings:</p>
+
+<pre class="code ruby"><code class="ruby">require cassandra::java
+include cassandra::optutils
+
+class { &#39;cassandra::apache_repo&#39;:
+  release =&gt; &#39;310x&#39;,
+  before  =&gt; Class[&#39;cassandra&#39;, &#39;cassandra::optutils&#39;],
+}
+
+class { &#39;cassandra&#39;:
+  ...
+}
+</code></pre>
+
 <h2 id="label-Reference">Reference</h2>
 
-<h3 id="label-Public+Classes">Public Classes</h3>
-<ul><li>
-<p><a
-href="http://locp.github.io/cassandra/puppet_classes/cassandra.html">cassandra</a></p>
-</li><li>
-<p><a
-href="http://locp.github.io/cassandra/puppet_classes/cassandra_3A_3Adatastax_agent.html">cassandra::datastax_agent</a></p>
-</li><li>
-<p><a
-href="http://locp.github.io/cassandra/puppet_classes/cassandra_3A_3Adatastax_repo.html">cassandra::datastax_repo</a></p>
-</li><li>
-<p><a
-href="http://locp.github.io/cassandra/puppet_classes/cassandra_3A_3Afirewall_ports.html">cassandra::firewall_ports</a></p>
-</li><li>
-<p><a
-href="http://locp.github.io/cassandra/puppet_classes/cassandra_3A_3Ajava.html">cassandra::java</a></p>
-</li><li>
-<p><a
-href="http://locp.github.io/cassandra/puppet_classes/cassandra_3A_3Aoptutils.html">cassandra::optutils</a></p>
-</li><li>
-<p><a
-href="http://locp.github.io/cassandra/puppet_classes/cassandra_3A_3Aschema.html">cassandra::schema</a></p>
-</li><li>
-<p><a
-href="http://locp.github.io/cassandra/puppet_classes/cassandra_3A_3Asystem_3A_3Aswapoff.html">cassandra::system::swapoff</a></p>
-</li><li>
-<p><a
-href="http://locp.github.io/cassandra/puppet_classes/cassandra_3A_3Asystem_3A_3Asysctl.html">cassandra::system::sysctl</a></p>
-</li><li>
-<p><a
-href="http://locp.github.io/cassandra/puppet_classes/cassandra_3A_3Asystem_3A_3Atransparent_hugepage.html">cassandra::system::transparent_hugepage</a></p>
-</li></ul>
-
-<h3 id="label-Public+Defined+Types">Public Defined Types</h3>
-<ul><li>
-<p><a
-href="http://locp.github.io/cassandra/puppet_defined_types/cassandra_3A_3Afile.html">cassandra::file</a></p>
-</li><li>
-<p><a
-href="http://locp.github.io/cassandra/puppet_defined_types/cassandra_3A_3Aschema_3A_3Acql_type.html">cassandra::schema::cql_type</a></p>
-</li><li>
-<p><a
-href="http://locp.github.io/cassandra/puppet_defined_types/cassandra_3A_3Aschema_3A_3Aindex.html">cassandra::schema::index</a></p>
-</li><li>
-<p><a
-href="http://locp.github.io/cassandra/puppet_defined_types/cassandra_3A_3Aschema_3A_3Akeyspace.html">cassandra::schema::keyspace</a></p>
-</li><li>
-<p><a
-href="http://locp.github.io/cassandra/puppet_defined_types/cassandra_3A_3Aschema_3A_3Apermission.html">cassandra::schema::permission</a></p>
-</li><li>
-<p><a
-href="http://locp.github.io/cassandra/puppet_defined_types/cassandra_3A_3Aschema_3A_3Atable.html">cassandra::schema::table</a></p>
-</li><li>
-<p><a
-href="http://locp.github.io/cassandra/puppet_defined_types/cassandra_3A_3Aschema_3A_3Auser.html">cassandra::schema::user</a></p>
-</li></ul>
-
-<h3 id="label-Private+Defined+Types">Private Defined Types</h3>
-<ul><li>
-<p><a
-href="http://locp.github.io/cassandra/puppet_defined_types/cassandra_3A_3Aprivate_3A_3Afirewall_ports_3A_3Arule.html">cassandra::private::firewall_ports::rule</a></p>
-</li></ul>
-
-<h3 id="label-Facts">Facts</h3>
-<ul><li>
-<p><a
-href="http://locp.github.io/cassandra/top-level-namespace.html#cassandracmsheapnewsize-instance_method">cassandracmsheapnewsize</a></p>
-</li><li>
-<p><a
-href="http://locp.github.io/cassandra/top-level-namespace.html#cassandracmsmaxheapsize-instance_method">cassandracmsmaxheapsize</a></p>
-</li><li>
-<p><a
-href="http://locp.github.io/cassandra/top-level-namespace.html#cassandraheapnewsize-instance_method">cassandraheapnewsize</a></p>
-</li><li>
-<p><a
-href="http://locp.github.io/cassandra/top-level-namespace.html#cassandramajorversion-instance_method">cassandramajorversion</a></p>
-</li><li>
-<p><a
-href="http://locp.github.io/cassandra/top-level-namespace.html#cassandramaxheapsize-instance_method">cassandramaxheapsize</a></p>
-</li><li>
-<p><a
-href="http://locp.github.io/cassandra/top-level-namespace.html#cassandraminorversion-instance_method">cassandraminorversion</a></p>
-</li><li>
-<p><a
-href="http://locp.github.io/cassandra/top-level-namespace.html#cassandrapatchversion-instance_method">cassandrapatchversion</a></p>
-</li><li>
-<p><a
-href="http://locp.github.io/cassandra/top-level-namespace.html#cassandrarelease-instance_method">cassandrarelease</a></p>
-</li></ul>
+<p>The reference documentation is generated using the <a
+href="https://github.com/puppetlabs/puppet-strings">puppet-strings</a>
+tool. To see all of it, please go to <a
+href="http://locp.github.io/cassandra/_index.html">locp.github.io/cassandra</a>.</p>
 
 <h2 id="label-Limitations">Limitations</h2>
 <ul><li>
@@ -748,6 +758,10 @@ change will not be reflected.</p>
 </li><li>
 <p>At the moment the <code>cassandra::system::transparent_hugepage</code> does
 not persist between reboots.</p>
+</li><li>
+<p>Currently Apache Cassandra only provides binary packages for Debian so the
+<code>cassandra::apache_repo</code> is not of much use to Red Hat family
+users.</p>
 </li></ul>
 
 <h2 id="label-Development">Development</h2>
@@ -770,7 +784,7 @@ href="https://github.com/locp/cassandra/graphs/contributors">github.com/locp/cas
 </div></div>
 
       <div id="footer">
-  Generated on Sat Jan 21 16:24:05 2017 by
+  Generated on Thu Mar 30 15:09:21 2017 by
   <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.8 (ruby-2.1.9).
 </div>
