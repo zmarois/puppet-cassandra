@@ -142,14 +142,14 @@ cassandra  is added as a system service.</p>
 href="https://issues.apache.org/jira/browse/CASSANDRA-9822">CASSANDRA-9822</a>.</p>
 </li></ul>
 
-<h4 id="label-What+the+cassandra-3A-3Adatastax_agent+class+affects">What the cassandra::datastax_agent class affects</h4>
+<h4 id="label-What+the+cassandra%3A%3Adatastax_agent+class+affects">What the cassandra::datastax_agent class affects</h4>
 <ul><li>
 <p>Optionally installs the DataStax agent.</p>
 </li><li>
 <p>Optionally sets JAVA_HOME in <strong>/etc/default/datastax-agent</strong>.</p>
 </li></ul>
 
-<h4 id="label-What+the+cassandra-3A-3Adatastax_repo+class+affects">What the cassandra::datastax_repo class affects</h4>
+<h4 id="label-What+the+cassandra%3A%3Adatastax_repo+class+affects">What the cassandra::datastax_repo class affects</h4>
 <ul><li>
 <p>Optionally configures a Yum repository to install the Cassandra packages 
 from (on Red Hat).</p>
@@ -158,25 +158,25 @@ from (on Red Hat).</p>
 from (on Debian).</p>
 </li></ul>
 
-<h4 id="label-What+the+cassandra-3A-3Adse+class+affects">What the cassandra::dse class affects</h4>
+<h4 id="label-What+the+cassandra%3A%3Adse+class+affects">What the cassandra::dse class affects</h4>
 <ul><li>
 <p>Optionally configures files in the <code>/etc/dse</code> directory if one
 is using  DataStax Enterprise.</p>
 </li></ul>
 
-<h4 id="label-What+the+cassandra-3A-3Afirewall_ports+class+affects">What the cassandra::firewall_ports class affects</h4>
+<h4 id="label-What+the+cassandra%3A%3Afirewall_ports+class+affects">What the cassandra::firewall_ports class affects</h4>
 <ul><li>
 <p>Optionally configures the firewall for the Cassandra related network 
 ports.</p>
 </li></ul>
 
-<h4 id="label-What+the+cassandra-3A-3Ajava+class+affects">What the cassandra::java class affects</h4>
+<h4 id="label-What+the+cassandra%3A%3Ajava+class+affects">What the cassandra::java class affects</h4>
 <ul><li>
 <p>Optionally installs a JRE/JDK package (e.g. java-1.7.0-openjdk) and the 
 Java Native Access (JNA).</p>
 </li></ul>
 
-<h4 id="label-What+the+cassandra-3A-3Aoptutils+class+affects">What the cassandra::optutils class affects</h4>
+<h4 id="label-What+the+cassandra%3A%3Aoptutils+class+affects">What the cassandra::optutils class affects</h4>
 <ul><li>
 <p>Optionally installs the Cassandra support tools (e.g. cassandra22-tools).</p>
 </li></ul>
@@ -248,7 +248,8 @@ details.</p>
 
  class { &#39;cassandra&#39;:
    package_ensure =&gt; $version,
- }</code></pre>
+ }
+</code></pre>
 
 <h4 id="label-Changes+in+1.8.0">Changes in 1.8.0</h4>
 
@@ -359,7 +360,8 @@ class { &#39;cassandra&#39;:
     &#39;start_native_transport&#39;      =&gt; true,
   },
   require  =&gt; Class[&#39;cassandra::datastax_repo&#39;, &#39;cassandra::java&#39;],
-}</code></pre>
+}
+</code></pre>
 
 <p>However, <strong>PLEASE</strong> note that this is the <strong>ABSOLUTE
 MINIMUM</strong> configuration to get Cassandra up and running but will
@@ -380,7 +382,8 @@ class { &#39;cassandra&#39;:
     ...
   },
   require  =&gt; Class[&#39;cassandra::datastax_repo&#39;, &#39;cassandra::java&#39;],
-}</code></pre>
+}
+</code></pre>
 
 <h3 id="label-Hiera">Hiera</h3>
 
@@ -494,7 +497,8 @@ class { &#39;cassandra::schema&#39;:
       &#39;ensure&#39; =&gt; absent
     },
   },
-}</code></pre>
+}
+</code></pre>
 
 <h3 id="label-Create+a+Cluster+in+a+Single+Data+Center">Create a Cluster in a Single Data Center</h3>
 
@@ -562,7 +566,8 @@ to be executed  before the Cassandra service is started.</p>
       &#39;start_native_transport&#39;      =&gt; true,
     },
   }
-}</code></pre>
+}
+</code></pre>
 
 <p>The default value for the num_tokens is already 256, but it is included in
 the example for clarity. Do not forget to either set auto_bootstrap to true
@@ -645,7 +650,8 @@ node /^node[345]$/ {
       &#39;start_native_transport&#39;      =&gt; true,
     },
   }
-}</code></pre>
+}
+</code></pre>
 
 <p>We don&#39;t need to specify the rack name (with the rack attribute) as
 RAC1 is the default value. Again, do not forget to either set
@@ -706,7 +712,8 @@ class { &#39;cassandra::dse&#39;:
       }
     }
   }
-}</code></pre>
+}
+</code></pre>
 
 <h3 id="label-Apache+Cassandra">Apache Cassandra</h3>
 
@@ -728,7 +735,8 @@ class { &#39;cassandra::apache_repo&#39;:
 
 class { &#39;cassandra&#39;:
   ...
-}</code></pre>
+}
+</code></pre>
 
 <h2 id="label-Reference">Reference</h2>
 
@@ -776,9 +784,9 @@ href="https://github.com/locp/cassandra/graphs/contributors">github.com/locp/cas
 </div></div>
 
       <div id="footer">
-  Generated on Thu Mar 30 16:44:50 2017 by
+  Generated on Wed Apr  5 00:32:16 2017 by
   <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
-  0.9.8 (ruby-2.4.0).
+  0.9.8 (ruby-2.1.9).
 </div>
 
     </div>
