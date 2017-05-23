@@ -155,6 +155,24 @@ or <strong>absent</strong> to remove the user if it exists.</p>
   
     <li>
       
+        <span class='name'>login</span>
+      
+      
+        <span class='type'>(<tt>boolean</tt>)</span>
+      
+      
+        <em class="default">(defaults to: <tt>true</tt>)</em>
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>True allows the role to log in.</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
         <span class='name'>user_name</span>
       
       
@@ -181,7 +199,6 @@ or <strong>absent</strong> to remove the user if it exists.</p>
         <pre class="lines">
 
 
-18
 19
 20
 21
@@ -225,34 +242,135 @@ or <strong>absent</strong> to remove the user if it exists.</p>
 59
 60
 61
-62</pre>
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115</pre>
       </td>
       <td>
-        <pre class="code"><span class="info file"># File 'manifests/schema/user.pp', line 18</span>
+        <pre class="code"><span class="info file"># File 'manifests/schema/user.pp', line 19</span>
 
 define cassandra::schema::user (
   $ensure    = present,
+  $login     = true,
   $password  = undef,
   $superuser = false,
   $user_name = $title,
   ){
   include &#39;cassandra::schema&#39;
-  $read_script = &#39;LIST USERS&#39;
+
+  if $::cassandrarelease != undef {
+    if versioncmp($::cassandrarelease, &#39;2.2&#39;) &lt; 0 {
+      $operate_with_roles = false
+    } else {
+      $operate_with_roles = true
+    }
+  } else {
+    $operate_with_roles = false
+  }
+
+  if $operate_with_roles {
+    $read_script = &#39;LIST ROLES&#39;
+  } else {
+    $read_script = &#39;LIST USERS&#39;
+  }
   $read_command = &quot;${::cassandra::schema::cqlsh_opts} -e \&quot;${read_script}\&quot; ${::cassandra::schema::cqlsh_conn} | grep &#39;\s*${user_name} |&#39;&quot;
 
   if $ensure == present {
-    $create_script1 = &quot;CREATE USER IF NOT EXISTS ${user_name}&quot;
+    if $operate_with_roles {
+      # we are running cassandra &gt; 2.2
+      $create_script1 = &quot;CREATE ROLE IF NOT EXISTS ${user_name}&quot;
 
-    if $password != undef {
-      $create_script2 = &quot;${create_script1} WITH PASSWORD &#39;${password}&#39;&quot;
-    } else {
-      $create_script2 = $create_script1
-    }
+      if $password != undef {
+        $create_script2 = &quot;${create_script1} WITH PASSWORD = &#39;${password}&#39;&quot;
+      } else {
+        $create_script2 = $create_script1
+      }
 
-    if $superuser {
-      $create_script = &quot;${create_script2} SUPERUSER&quot;
+      if $superuser {
+        if $password != undef {
+          $create_script3 = &quot;${create_script2} AND SUPERUSER = true&quot;
+        } else {
+          $create_script3 = &quot;${create_script2} WITH SUPERUSER = true&quot;
+        }
+      } else {
+        $create_script3 = $create_script2
+      }
+
+      if $login {
+        if $superuser or $password != undef {
+          $create_script = &quot;${create_script3} AND LOGIN = true&quot;
+        }
+        else {
+          $create_script = &quot;${create_script3} WITH LOGIN = true&quot;
+        }
+      } else {
+        $create_script = $create_script3
+      }
     } else {
-      $create_script = &quot;${create_script2} NOSUPERUSER&quot;
+      $create_script1 = &quot;CREATE USER IF NOT EXISTS ${user_name}&quot;
+
+      if $password != undef {
+        $create_script2 = &quot;${create_script1} WITH PASSWORD &#39;${password}&#39;&quot;
+      } else {
+        $create_script2 = $create_script1
+      }
+
+      if $superuser {
+        $create_script = &quot;${create_script2} SUPERUSER&quot;
+      } else {
+        $create_script = &quot;${create_script2} NOSUPERUSER&quot;
+      }
     }
 
     $create_command = &quot;${::cassandra::schema::cqlsh_opts} -e \&quot;${create_script}\&quot; ${::cassandra::schema::cqlsh_conn}&quot;
@@ -263,7 +381,11 @@ define cassandra::schema::user (
       require =&gt; Exec[&#39;::cassandra::schema connection test&#39;],
     }
   } elsif $ensure == absent {
-    $delete_script = &quot;DROP USER ${user_name}&quot;
+    if $operate_with_roles {
+      $delete_script = &quot;DROP ROLE ${user_name}&quot;
+    } else {
+      $delete_script = &quot;DROP USER ${user_name}&quot;
+    }
     $delete_command = &quot;${::cassandra::schema::cqlsh_opts} -e \&quot;${delete_script}\&quot; ${::cassandra::schema::cqlsh_conn}&quot;
 
     exec { &quot;Delete user (${user_name})&quot;:
@@ -282,7 +404,7 @@ define cassandra::schema::user (
 </div>
 
       <div id="footer">
-  Generated on Mon Apr 24 17:30:38 2017 by
+  Generated on Tue May 23 18:38:58 2017 by
   <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.9 (ruby-2.1.9).
 </div>
