@@ -129,11 +129,13 @@ supported operating  systems.</p>
 <p>First, you&#39;ll need to install the testing dependencies using <a
 href="http://bundler.io">bundler</a>.</p>
 
-<pre class="code ruby"><code class="ruby"><span class='id identifier rubyid_bundle'>bundle</span> <span class='id identifier rubyid_install'>install</span></code></pre>
+<pre class="code ruby"><code class="ruby"><span class='id identifier rubyid_bundle'>bundle</span> <span class='id identifier rubyid_install'>install</span>
+</code></pre>
 
 <p>To run all of the unit tests execute the following:</p>
 
-<pre class="code ruby"><code class="ruby"><span class='id identifier rubyid_bundle'>bundle</span> <span class='id identifier rubyid_exec'>exec</span> <span class='id identifier rubyid_rake'>rake</span> <span class='id identifier rubyid_test'>test</span></code></pre>
+<pre class="code ruby"><code class="ruby"><span class='id identifier rubyid_bundle'>bundle</span> <span class='id identifier rubyid_exec'>exec</span> <span class='id identifier rubyid_rake'>rake</span> <span class='id identifier rubyid_test'>test</span>
+</code></pre>
 
 <p>This should output something like the following:</p>
 
@@ -166,7 +168,8 @@ separately with individual commands:</p>
 <span class='id identifier rubyid_bundle'>bundle</span> <span class='id identifier rubyid_exec'>exec</span> <span class='id identifier rubyid_rake'>rake</span> <span class='id identifier rubyid_rubocop'>rubocop</span>
 <span class='id identifier rubyid_bundle'>bundle</span> <span class='id identifier rubyid_exec'>exec</span> <span class='id identifier rubyid_rake'>rake</span> <span class='id identifier rubyid_lint'>lint</span>
 <span class='id identifier rubyid_bundle'>bundle</span> <span class='id identifier rubyid_exec'>exec</span> <span class='id identifier rubyid_rake'>rake</span> <span class='id identifier rubyid_validate'>validate</span>
-<span class='id identifier rubyid_bundle'>bundle</span> <span class='id identifier rubyid_exec'>exec</span> <span class='id identifier rubyid_rake'>rake</span> <span class='id identifier rubyid_spec'>spec</span></code></pre>
+<span class='id identifier rubyid_bundle'>bundle</span> <span class='id identifier rubyid_exec'>exec</span> <span class='id identifier rubyid_rake'>rake</span> <span class='id identifier rubyid_spec'>spec</span>
+</code></pre>
 
 <p>If in doubt, or you are stuck, please ask for help in the PR or via our <a
 href="https://gitter.im/locp/cassandra">Gitter Room</a>.</p>
@@ -188,15 +191,18 @@ install further gems for this to work with the following command:</p>
 <span class='id identifier rubyid_bundle'>bundle</span> <span class='id identifier rubyid_exec'>exec</span> <span class='id identifier rubyid_rake'>rake</span> <span class='label'>beaker:</span><span class='id identifier rubyid_debian8'>debian8</span>                                        
 <span class='id identifier rubyid_bundle'>bundle</span> <span class='id identifier rubyid_exec'>exec</span> <span class='id identifier rubyid_rake'>rake</span> <span class='label'>beaker:</span><span class='id identifier rubyid_ubuntu1204'>ubuntu1204</span>                                     
 <span class='id identifier rubyid_bundle'>bundle</span> <span class='id identifier rubyid_exec'>exec</span> <span class='id identifier rubyid_rake'>rake</span> <span class='label'>beaker:</span><span class='id identifier rubyid_ubuntu1404'>ubuntu1404</span>                                     
-<span class='id identifier rubyid_bundle'>bundle</span> <span class='id identifier rubyid_exec'>exec</span> <span class='id identifier rubyid_rake'>rake</span> <span class='label'>beaker:</span><span class='id identifier rubyid_ubuntu1604'>ubuntu1604</span></code></pre>
+<span class='id identifier rubyid_bundle'>bundle</span> <span class='id identifier rubyid_exec'>exec</span> <span class='id identifier rubyid_rake'>rake</span> <span class='label'>beaker:</span><span class='id identifier rubyid_ubuntu1604'>ubuntu1604</span>
+</code></pre>
 
 <h2 id="label-Contributors">Contributors</h2>
 
 <p><strong>Release</strong> | <strong>PR/Issue</strong> |
 <strong>Contributer</strong> ————|—————————————————–|—————————————————-
-2.3.0 | <a href="https://github.com/locp/cassandra/pull/329">Hiera
-documentation</a> | <a href="https://github.com/tibers">@tibers</a> 2.1.1 |
-<a href="https://github.com/locp/cassandra/pull/325">Correct cql_types
+2.6.0 | <a href="https://github.com/locp/cassandra/pull/396">Adding Red Hat
+OS</a> | <a href="https://github.com/stijnvdb">@stijnvdb</a> 2.3.0 | <a
+href="https://github.com/locp/cassandra/pull/329">Hiera documentation</a> |
+<a href="https://github.com/tibers">@tibers</a> 2.1.1 | <a
+href="https://github.com/locp/cassandra/pull/325">Correct cql_types
 conditional in cassandra::schema class</a>| <a
 href="https://github.com/aaron-miller">@aaron-miller</a> 2.0.2 | <a
 href="https://github.com/locp/cassandra/issues/291">locp/cassandra 2.0
@@ -301,9 +307,9 @@ href="https://github.com/puppetlabs/beaker/tree/master/docs">github.com/puppetla
 </div></div>
 
       <div id="footer">
-  Generated on Wed May 31 20:23:13 2017 by
+  Generated on Mon Sep 11 22:11:43 2017 by
   <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
-  0.9.9 (ruby-2.1.9).
+  0.9.9 (ruby-2.4.0).
 </div>
 
     </div>
