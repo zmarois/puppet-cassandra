@@ -339,14 +339,16 @@ class cassandra (
     $hints_directory_settings,
     $saved_caches_directory_settings)
 
-  file { $config_file:
-    ensure  => present,
-    owner   => 'cassandra',
-    group   => 'cassandra',
-    content => template($cassandra_yaml_tmpl),
-    mode    => $config_file_mode,
-    require => $config_file_require,
-    before  => $config_file_before,
+  if $manage_config_file {
+    file { $config_file:
+      ensure  => present,
+      owner   => 'cassandra',
+      group   => 'cassandra',
+      content => template($cassandra_yaml_tmpl),
+      mode    => $config_file_mode,
+      require => $config_file_require,
+      before  => $config_file_before,
+    }
   }
 
   file { $dc_rack_properties_file:
