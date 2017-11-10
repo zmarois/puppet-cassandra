@@ -347,6 +347,18 @@ class cassandra (
       require => $config_file_require,
       before  => $config_file_before,
     }
+
+    $service_dependencies = [
+          File[$config_file],
+          File[$dc_rack_properties_file],
+          Package['cassandra'],
+        ]
+  }
+  else {
+    $service_dependencies = [
+          File[$dc_rack_properties_file],
+          Package['cassandra'],
+        ]
   }
 
   file { $dc_rack_properties_file:
@@ -365,22 +377,14 @@ class cassandra (
         ensure    => $service_ensure,
         name      => $service_name,
         enable    => $service_enable,
-        subscribe => [
-          File[$config_file],
-          File[$dc_rack_properties_file],
-          Package['cassandra'],
-        ],
+        subscribe => $service_dependencies,
       }
     } else {
       service { 'cassandra':
         ensure  => $service_ensure,
         name    => $service_name,
         enable  => $service_enable,
-        require => [
-          File[$config_file],
-          File[$dc_rack_properties_file],
-          Package['cassandra'],
-        ],
+        require => $service_dependencies,
       }
     }
   }
