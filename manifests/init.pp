@@ -258,14 +258,12 @@ class cassandra (
     refreshonly => true,
   }
 
-  if $manage_config_file {
-    file { $config_path:
-      ensure  => directory,
-      group   => 'cassandra',
-      owner   => 'cassandra',
-      mode    => '0755',
-      require => $config_path_require,
-    }
+  file { $config_path:
+    ensure  => directory,
+    group   => 'cassandra',
+    owner   => 'cassandra',
+    mode    => '0755',
+    require => $config_path_require,
   }
 
   if $commitlog_directory {
